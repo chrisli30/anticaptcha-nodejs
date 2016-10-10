@@ -8,6 +8,7 @@ module.exports = function(clientKey) {
 
             websiteUrl: null,
             websiteKey: null,
+            websiteSToken: null,
             proxyType: 'http',
             proxyAddress: null,
             proxyPort: null,
@@ -75,6 +76,7 @@ module.exports = function(clientKey) {
                 type:           'NoCaptchaTask',
                 websiteURL:     this.params.websiteUrl,
                 websiteKey:     this.params.websiteKey,
+                websiteSToken:  this.params.websiteSToken,
                 proxyType:      this.params.proxyType,
                 proxyAddress:   this.params.proxyAddress,
                 proxyPort:      this.params.proxyPort,
@@ -154,6 +156,10 @@ module.exports = function(clientKey) {
 
         this.setWebsiteKey = function (value) {
             this.params.websiteKey = value;
+        };
+
+        this.setWebsiteSToken = function (value) {
+            this.params.websiteSToken = value;
         };
 
         this.setProxyType = function (value) {
