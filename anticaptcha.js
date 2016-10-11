@@ -19,6 +19,20 @@ var Anticaptcha = function(clientKey) {
             firstAttemptWaitingInterval = 5,
             normalWaitingInterval = 2;
 
+        this.getBalance = function (cb) {
+            var postData = {
+                clientKey: this.params.clientKey
+            };
+
+            this.jsonPostRequest('getBalance', postData, function (err, jsonResult) {
+                if (err) {
+                    return cb(err);
+                }
+
+                cb(null, jsonResult.balance);
+            });
+        };
+
         this.createTask = function (cb) {
             var postData = {
                 clientKey: this.params.clientKey,

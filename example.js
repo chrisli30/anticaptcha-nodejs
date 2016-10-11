@@ -19,20 +19,30 @@ anticaptcha.setProxyPassword("proxypassword");
 //browser header parameters
 anticaptcha.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116");
 
-anticaptcha.createTask(function (err, taskId) {
+// check balance first
+anticaptcha.getBalance(function (err, balance) {
     if (err) {
         console.error(err);
         return;
     }
 
-    console.log(taskId);
+    if (balance > 0) {
+        anticaptcha.createTask(function (err, taskId) {
+            if (err) {
+                console.error(err);
+                return;
+            }
 
-    anticaptcha.getTaskSolution(taskId, function (err, taskSolution) {
-        if (err) {
-            console.error(err);
-            return;
-        }
+            console.log(taskId);
 
-        console.log(taskSolution);
-    });
+            anticaptcha.getTaskSolution(taskId, function (err, taskSolution) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+
+                console.log(taskSolution);
+            });
+        });
+    }
 });
