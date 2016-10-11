@@ -1,6 +1,4 @@
-var http = require('http');
-
-module.exports = function(clientKey) {
+var Anticaptcha = function(clientKey) {
     return new function(clientKey) {
         this.params = {
             host: 'api.anti-captcha.com',
@@ -87,66 +85,86 @@ module.exports = function(clientKey) {
         };
 
         this.jsonPostRequest = function(methodName, postData, cb) {
-            // http request options
-            var options = {
-                hostname: this.params.host,
-                path: '/' + methodName,
-                method: 'POST',
-                headers: {
-                    'accept-encoding':  'gzip,deflate',
-                    'content-type':     'application/json; charset=utf-8',
-                    'accept':           'application/json',
-                    'content-length':   Buffer.byteLength(JSON.stringify(postData))
-                }
-            };
+            if (typeof process === 'object' && typeof require === 'function') { // NodeJS
+                var http = require('http');
 
-            // console.log(options);
-            // console.log(JSON.stringify(postData));
+                // http request options
+                var options = {
+                    hostname: this.params.host,
+                    path: '/' + methodName,
+                    method: 'POST',
+                    headers: {
+                        'accept-encoding':  'gzip,deflate',
+                        'content-type':     'application/json; charset=utf-8',
+                        'accept':           'application/json',
+                        'content-length':   Buffer.byteLength(JSON.stringify(postData))
+                    }
+                };
 
-            var req = http.request(options, function(response) { // on response
-                var str = '';
+                // console.log(options);
+                // console.log(JSON.stringify(postData));
 
-                // another chunk of data has been recieved, so append it to `str`
-                response.on('data', function (chunk) {
-                    str += chunk;
+                var req = http.request(options, function(response) { // on response
+                    var str = '';
+
+                    // another chunk of data has been recieved, so append it to `str`
+                    response.on('data', function (chunk) {
+                        str += chunk;
+                    });
+
+                    // the whole response has been recieved, so we just print it out here
+                    response.on('end', function () {
+                        // console.log(str);
+
+                        try {
+                            var jsonResult = JSON.parse(str);
+                        } catch (err) {
+                            return cb(err);
+                        }
+
+                        if (jsonResult.errorId) {
+                            return cb(new Error(jsonResult.errorDescription, jsonResult.errorCode));
+                        }
+
+                        return cb(null, jsonResult);
+                    });
                 });
 
-                // the whole response has been recieved, so we just print it out here
-                response.on('end', function () {
-                    // console.log(str);
+                // send post data
+                req.write(JSON.stringify(postData));
+                req.end();
 
-                    try {
-                        var jsonResult = JSON.parse(str);
-                    } catch (err) {
-                        return cb(err);
-                    }
-
-                    if (jsonResult.errorId) {
-                        return cb(new Error(jsonResult.errorDescription, jsonResult.errorCode));
-                    }
-
-                    return cb(null, jsonResult);
+                // timeout in milliseconds
+                req.setTimeout(connectionTimeout * 1000);
+                req.on('timeout', function() {
+                    console.log('timeout');
+                    req.abort();
                 });
-            });
 
-            // send post data
-            req.write(JSON.stringify(postData));
-            req.end();
+                // After timeout connection throws Error, so we have to handle it
+                req.on('error', function(err) {
+                    console.log('error');
+                    return cb(err);
+                });
 
-            // timeout in milliseconds
-            req.setTimeout(connectionTimeout * 1000);
-            req.on('timeout', function() {
-                console.log('timeout');
-                req.abort();
-            });
-
-            // After timeout connection throws Error, so we have to handle it
-            req.on('error', function(err) {
-                console.log('error');
-                return cb(err);
-            });
-
-            return req;
+                return req;
+            } else if ((typeof window !== 'undefined' || typeof chrome === 'object') && typeof $ == 'function') { // in browser or chrome extension with jQuery
+                $.ajax(
+                    'http://' + this.params.host + '/' + methodName,
+                    {
+                        method: 'POST',
+                        data: JSON.stringify(postData),
+                        success: function (result) {
+                            cb(false, result);
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            cb(textStatus); // should be errorThrown
+                        }
+                    }
+                );
+            } else {
+                console.error('Application should be run either in NodeJs environment or has jQuery to be included');
+            }
         };
 
         //proxy access parameters
@@ -188,3 +206,7 @@ module.exports = function(clientKey) {
 
     }(clientKey);
 };
+
+if (typeof process === 'object' && typeof require === 'function') { // NodeJS
+    module.exports = Anticaptcha;
+}
