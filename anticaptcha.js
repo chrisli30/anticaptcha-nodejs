@@ -168,8 +168,12 @@ var Anticaptcha = function(clientKey) {
                     {
                         method: 'POST',
                         data: JSON.stringify(postData),
-                        success: function (result) {
-                            cb(false, result);
+                        success: function (jsonResult) {
+                            if (jsonResult && jsonResult.errorId) {
+                                return cb(new Error(jsonResult.errorDescription, jsonResult.errorCode));
+                            }
+
+                            cb(false, jsonResult);
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                             cb(textStatus); // should be errorThrown
