@@ -164,7 +164,7 @@ var Anticaptcha = function(clientKey) {
                 return req;
             } else if ((typeof window !== 'undefined' || typeof chrome === 'object') && typeof $ == 'function') { // in browser or chrome extension with jQuery
                 $.ajax(
-                    'http://' + this.params.host + '/' + methodName,
+                    window.location.protocol + '//' + this.params.host + '/' + methodName,
                     {
                         method: 'POST',
                         data: JSON.stringify(postData),
