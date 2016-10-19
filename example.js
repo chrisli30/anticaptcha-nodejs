@@ -6,8 +6,8 @@
 var anticaptcha = require('./anticaptcha')('12345678901234567890123456789012');
 
 //recaptcha key from target website
-anticaptcha.setWebsiteURL("http://http.myjino.ru/recaptcha/test-get.php");
-anticaptcha.setWebsiteKey("6Lc_aCMTAAAAABx7u2W0WPXnVbI_v6ZdbM6rYf16");
+anticaptcha.setWebsiteURL("http://mywebsite.com/recaptcha/test.php");
+anticaptcha.setWebsiteKey("sitekey-can-be-taken-from-div.g-recaptcha-element");
 
 //proxy access parameters
 anticaptcha.setProxyType("http");
