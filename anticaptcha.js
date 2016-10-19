@@ -33,10 +33,13 @@ var Anticaptcha = function(clientKey) {
             });
         };
 
-        this.createTask = function (cb) {
+        this.createTask = function (cb, type) {
+            var taskPostData = this.getPostData();
+            taskPostData.type = typeof type == 'undefined' ? 'NoCaptchaTask' : type;
+
             var postData = {
                 clientKey: this.params.clientKey,
-                task: this.getPostData()
+                task: taskPostData
             };
 
             this.jsonPostRequest('createTask', postData, function (err, jsonResult) {
@@ -50,7 +53,11 @@ var Anticaptcha = function(clientKey) {
                 cb(null, taskId);
             });
         };
-        
+
+        this.createTaskProxyless = function (cb) {
+            this.createTask(cb, 'NoCaptchaTaskProxyless');
+        };
+
         this.getTaskSolution = function (taskId, cb, currentAttempt = 0) {
             var postData = {
                 clientKey: this.params.clientKey,
@@ -85,7 +92,6 @@ var Anticaptcha = function(clientKey) {
 
         this.getPostData = function() {
             return {
-                type:           'NoCaptchaTask',
                 websiteURL:     this.params.websiteUrl,
                 websiteKey:     this.params.websiteKey,
                 websiteSToken:  this.params.websiteSToken,
