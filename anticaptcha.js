@@ -58,7 +58,9 @@ var Anticaptcha = function(clientKey) {
             this.createTask(cb, 'NoCaptchaTaskProxyless');
         };
 
-        this.getTaskSolution = function (taskId, cb, currentAttempt = 0) {
+        this.getTaskSolution = function (taskId, cb, currentAttempt) {
+            currentAttempt = currentAttempt || 0;
+
             var postData = {
                 clientKey: this.params.clientKey,
                 taskId: taskId
