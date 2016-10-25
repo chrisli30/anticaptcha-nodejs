@@ -13,6 +13,8 @@ var Anticaptcha = function(clientKey) {
             proxyLogin: null,
             proxyPassword: null,
             userAgent: '',
+
+            softId: null
         };
 
         var connectionTimeout = 20,
@@ -39,7 +41,8 @@ var Anticaptcha = function(clientKey) {
 
             var postData = {
                 clientKey: this.params.clientKey,
-                task: taskPostData
+                task: taskPostData,
+                softId: this.params.softId !== null ? this.params.softId : 0
             };
 
             this.jsonPostRequest('createTask', postData, function (err, jsonResult) {
@@ -228,6 +231,10 @@ var Anticaptcha = function(clientKey) {
 
         this.setUserAgent = function (value) {
             this.params.userAgent = value;
+        };
+
+        this.setSoftId = function (value) {
+            this.params.softId = value;
         };
 
     }(clientKey);
