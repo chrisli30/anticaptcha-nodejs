@@ -4,6 +4,7 @@ var Anticaptcha = function(clientKey) {
             host: 'api.anti-captcha.com',
             clientKey: clientKey,
 
+            // reCAPTCHA 2
             websiteUrl: null,
             websiteKey: null,
             websiteSToken: null,
@@ -13,6 +14,14 @@ var Anticaptcha = function(clientKey) {
             proxyLogin: null,
             proxyPassword: null,
             userAgent: '',
+
+            // image
+            phrase: null,
+            case: null,
+            numeric: null,
+            math: null,
+            minLength: null,
+            maxLength: null,
 
             softId: null
         };
@@ -35,9 +44,17 @@ var Anticaptcha = function(clientKey) {
             });
         };
 
-        this.createTask = function (cb, type) {
-            var taskPostData = this.getPostData();
-            taskPostData.type = typeof type == 'undefined' ? 'NoCaptchaTask' : type;
+        this.createTask = function (cb, type, taskData) {
+            type = typeof type == 'undefined' ? 'NoCaptchaTask' : type;
+            var taskPostData = this.getPostData(type);
+            taskPostData.type = type;
+
+            // Merge incoming and already fetched taskData, incoming data has priority
+            if (typeof taskData == 'object') {
+                for (var i in taskData) {
+                    taskPostData[i] = taskData[i];
+                }
+            }
 
             var postData = {
                 clientKey: this.params.clientKey,
@@ -59,6 +76,10 @@ var Anticaptcha = function(clientKey) {
 
         this.createTaskProxyless = function (cb) {
             this.createTask(cb, 'NoCaptchaTaskProxyless');
+        };
+
+        this.createImageToTextTask = function (taskData, cb) {
+            this.createTask(cb, 'ImageToTextTask', taskData);
         };
 
         this.getTaskSolution = function (taskId, cb, currentAttempt) {
@@ -89,24 +110,46 @@ var Anticaptcha = function(clientKey) {
                     if (jsonResult.status == 'processing') {
                         return that.getTaskSolution(taskId, cb, currentAttempt + 1);
                     } else if (jsonResult.status == 'ready') {
-                        return cb(null, jsonResult.solution.gRecaptchaResponse);
+                        return cb(null, typeof jsonResult.solution.gRecaptchaResponse != 'undefined' ? jsonResult.solution.gRecaptchaResponse : jsonResult.solution.text);
                     }
                 });
             }, waitingInterval * 1000);
         };
 
-        this.getPostData = function() {
-            return {
-                websiteURL:     this.params.websiteUrl,
-                websiteKey:     this.params.websiteKey,
-                websiteSToken:  this.params.websiteSToken,
-                proxyType:      this.params.proxyType,
-                proxyAddress:   this.params.proxyAddress,
-                proxyPort:      this.params.proxyPort,
-                proxyLogin:     this.params.proxyLogin,
-                proxyPassword:  this.params.proxyPassword,
-                userAgent:      this.params.userAgent
-            };
+        this.getPostData = function(type) {
+            switch (type) {
+                case 'ImageToTextTask':
+                    return {
+                        phrase:         this.params.phrase,
+                        case:           this.params.case,
+                        numeric:        this.params.numeric,
+                        math:           this.params.math,
+                        minLength:      this.params.minLength,
+                        maxLength:      this.params.maxLength
+                    };
+                    break;
+                case 'NoCaptchaTaskProxyless':
+                    return {
+                        websiteURL:     this.params.websiteUrl,
+                        websiteKey:     this.params.websiteKey,
+                        websiteSToken:  this.params.websiteSToken
+                    };
+                    break;
+                default: // NoCaptchaTask
+                    return {
+                        websiteURL:     this.params.websiteUrl,
+                        websiteKey:     this.params.websiteKey,
+                        websiteSToken:  this.params.websiteSToken,
+                        proxyType:      this.params.proxyType,
+                        proxyAddress:   this.params.proxyAddress,
+                        proxyPort:      this.params.proxyPort,
+                        proxyLogin:     this.params.proxyLogin,
+                        proxyPassword:  this.params.proxyPassword,
+                        userAgent:      this.params.userAgent
+                    };
+            }
+
+
         };
 
         this.jsonPostRequest = function(methodName, postData, cb) {
@@ -232,6 +275,32 @@ var Anticaptcha = function(clientKey) {
         this.setUserAgent = function (value) {
             this.params.userAgent = value;
         };
+
+        // image
+        this.setPhrase = function (value) {
+            this.params.phrase = value;
+        };
+
+        this.setCase = function (value) {
+            this.params.case = value;
+        };
+
+        this.setNumeric = function (value) {
+            this.params.numeric = value;
+        };
+
+        this.setMath = function (value) {
+            this.params.math = value;
+        };
+
+        this.setMinLength = function (value) {
+            this.params.minLength = value;
+        };
+
+        this.setMaxLength = function (value) {
+            this.params.maxLength = value;
+        };
+
 
         this.setSoftId = function (value) {
             this.params.softId = value;
