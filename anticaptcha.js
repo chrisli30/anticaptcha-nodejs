@@ -2,6 +2,7 @@ var Anticaptcha = function(clientKey) {
     return new function(clientKey) {
         this.params = {
             host: 'api.anti-captcha.com',
+            port: 80,
             clientKey: clientKey,
 
             // reCAPTCHA 2
@@ -159,6 +160,7 @@ var Anticaptcha = function(clientKey) {
                 // http request options
                 var options = {
                     hostname: this.params.host,
+                    port: this.params.port,
                     path: '/' + methodName,
                     method: 'POST',
                     headers: {
@@ -304,6 +306,14 @@ var Anticaptcha = function(clientKey) {
 
         this.setSoftId = function (value) {
             this.params.softId = value;
+        };
+
+        this.setHost = function (value) {
+            this.params.host = value;
+        };
+
+        this.setPort = function (value) {
+            this.params.port = value;
         };
 
     }(clientKey);
