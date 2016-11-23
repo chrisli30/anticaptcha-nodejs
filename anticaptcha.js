@@ -220,7 +220,10 @@ var Anticaptcha = function(clientKey) {
                 return req;
             } else if ((typeof window !== 'undefined' || typeof chrome === 'object') && typeof $ == 'function') { // in browser or chrome extension with jQuery
                 $.ajax(
-                    (window.location.protocol == 'https:' ? 'https:' : 'http:') + '//' + this.params.host + ':' + this.params.port + '/' + methodName,
+                    (window.location.protocol == 'https:' ? 'https:' : 'http:') + '//'
+                    + this.params.host
+                    + (window.location.protocol != 'https:' ? ':' + this.params.port : '')
+                    + '/' + methodName,
                     {
                         method: 'POST',
                         data: JSON.stringify(postData),
