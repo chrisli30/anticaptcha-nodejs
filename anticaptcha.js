@@ -244,6 +244,10 @@ var Anticaptcha = function(clientKey) {
             }
         };
 
+        this.setClientKey = function (value) {
+            this.params.clientKey = value;
+        };
+
         //proxy access parameters
         this.setWebsiteURL = function (value) {
             this.params.websiteUrl = value;
