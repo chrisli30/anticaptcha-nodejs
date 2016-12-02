@@ -41,7 +41,7 @@ var Anticaptcha = function(clientKey) {
                     return cb(err);
                 }
 
-                cb(null, jsonResult.balance);
+                cb(null, jsonResult.balance, jsonResult);
             });
         };
 
@@ -71,7 +71,7 @@ var Anticaptcha = function(clientKey) {
                 // Task created
                 var taskId = jsonResult.taskId;
 
-                cb(null, taskId);
+                cb(null, taskId, jsonResult);
             });
         };
 
@@ -111,7 +111,7 @@ var Anticaptcha = function(clientKey) {
                     if (jsonResult.status == 'processing') {
                         return that.getTaskSolution(taskId, cb, currentAttempt + 1);
                     } else if (jsonResult.status == 'ready') {
-                        return cb(null, typeof jsonResult.solution.gRecaptchaResponse != 'undefined' ? jsonResult.solution.gRecaptchaResponse : jsonResult.solution.text);
+                        return cb(null, typeof jsonResult.solution.gRecaptchaResponse != 'undefined' ? jsonResult.solution.gRecaptchaResponse : jsonResult.solution.text, jsonResult);
                     }
                 });
             }, waitingInterval * 1000);
