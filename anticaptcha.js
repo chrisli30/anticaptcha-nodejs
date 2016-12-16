@@ -38,7 +38,7 @@ var Anticaptcha = function(clientKey) {
 
             this.jsonPostRequest('getBalance', postData, function (err, jsonResult) {
                 if (err) {
-                    return cb(err);
+                    return cb(err, null, jsonResult);
                 }
 
                 cb(null, jsonResult.balance, jsonResult);
@@ -65,7 +65,7 @@ var Anticaptcha = function(clientKey) {
 
             this.jsonPostRequest('createTask', postData, function (err, jsonResult) {
                 if (err) {
-                    return cb(err);
+                    return cb(err, null, jsonResult);
                 }
 
                 // Task created
@@ -105,7 +105,7 @@ var Anticaptcha = function(clientKey) {
             setTimeout(function() {
                 that.jsonPostRequest('getTaskResult', postData, function (err, jsonResult) {
                     if (err) {
-                        return cb(err);
+                        return cb(err, null, jsonResult);
                     }
 
                     if (jsonResult.status == 'processing') {
@@ -193,7 +193,7 @@ var Anticaptcha = function(clientKey) {
                         }
 
                         if (jsonResult.errorId) {
-                            return cb(new Error(jsonResult.errorDescription, jsonResult.errorCode));
+                            return cb(new Error(jsonResult.errorDescription, jsonResult.errorCode), jsonResult);
                         }
 
                         return cb(null, jsonResult);
@@ -229,7 +229,7 @@ var Anticaptcha = function(clientKey) {
                         data: JSON.stringify(postData),
                         success: function (jsonResult) {
                             if (jsonResult && jsonResult.errorId) {
-                                return cb(new Error(jsonResult.errorDescription, jsonResult.errorCode));
+                                return cb(new Error(jsonResult.errorDescription, jsonResult.errorCode), jsonResult);
                             }
 
                             cb(false, jsonResult);
