@@ -24,7 +24,8 @@ var Anticaptcha = function(clientKey) {
             minLength: null,
             maxLength: null,
 
-            softId: null
+            softId: null,
+            languagePool: null
         };
 
         var connectionTimeout = 20,
@@ -62,6 +63,10 @@ var Anticaptcha = function(clientKey) {
                 task: taskPostData,
                 softId: this.params.softId !== null ? this.params.softId : 0
             };
+
+            if (this.params.languagePool !== null) {
+                postData.languagePool = this.params.languagePool;
+            }
 
             this.jsonPostRequest('createTask', postData, function (err, jsonResult) {
                 if (err) {
@@ -313,6 +318,10 @@ var Anticaptcha = function(clientKey) {
 
         this.setSoftId = function (value) {
             this.params.softId = value;
+        };
+
+        this.setLanguagePool = function (value) {
+            this.params.languagePool = value;
         };
 
         this.setHost = function (value) {
