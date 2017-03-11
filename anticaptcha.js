@@ -88,7 +88,7 @@ var Anticaptcha = function(clientKey) {
             this.createTask(cb, 'ImageToTextTask', taskData);
         };
 
-        this.getTaskSolution = function (taskId, cb, currentAttempt) {
+        this.getTaskSolution = function (taskId, cb, currentAttempt, tickCb) {
             currentAttempt = currentAttempt || 0;
 
             var postData = {
@@ -114,7 +114,11 @@ var Anticaptcha = function(clientKey) {
                     }
 
                     if (jsonResult.status == 'processing') {
-                        return that.getTaskSolution(taskId, cb, currentAttempt + 1);
+                        // Every call I'm ticki-ing
+                        if (tickCb) {
+                            tickCb();
+                        }
+                        return that.getTaskSolution(taskId, cb, currentAttempt + 1, tickCb);
                     } else if (jsonResult.status == 'ready') {
                         return cb(null, typeof jsonResult.solution.gRecaptchaResponse != 'undefined' ? jsonResult.solution.gRecaptchaResponse : jsonResult.solution.text, jsonResult);
                     }
