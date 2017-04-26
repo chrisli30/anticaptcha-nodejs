@@ -236,6 +236,7 @@ var Anticaptcha = function(clientKey) {
                     {
                         method: 'POST',
                         data: JSON.stringify(postData),
+                        dataType: 'json',
                         success: function (jsonResult) {
                             if (jsonResult && jsonResult.errorId) {
                                 return cb(new Error(jsonResult.errorDescription, jsonResult.errorCode), jsonResult);
