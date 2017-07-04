@@ -245,7 +245,7 @@ var Anticaptcha = function(clientKey) {
                             cb(false, jsonResult);
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            cb(textStatus); // should be errorThrown
+                            cb(textStatus != 'error' ? textStatus : 'Unknown error, watch console'); // should be errorThrown
                         }
                     }
                 );
