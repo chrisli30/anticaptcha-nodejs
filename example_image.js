@@ -6,7 +6,7 @@
 var anticaptcha = require('./anticaptcha')('12345678901234567890123456789012');
 
 // check balance first
-anticaptcha.getBalance(function (err, balance) {
+anticaptcha.getBalance(function (err, balance) { 
     if (err) {
         console.error(err);
         return;
